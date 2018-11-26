@@ -2,6 +2,8 @@ package snownee.cuisine.client;
 
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.ColorizerFoliage;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -24,12 +26,19 @@ import snownee.cuisine.internal.food.Drink;
 @Mod.EventBusSubscriber(modid = Cuisine.MODID, value = Side.CLIENT)
 public final class CuisineItemRendering
 {
+    public static final ResourceLocation EMPTY_MODEL = new ResourceLocation(Cuisine.MODID, "empty");
+
+    private CuisineItemRendering()
+    {
+        throw new UnsupportedOperationException("No instance for you");
+    }
 
     @SubscribeEvent
     public static void onItemColorsInit(ColorHandlerEvent.Item event)
     {
         ItemColors itemColors = event.getItemColors();
-        itemColors.registerItemColorHandler((stack, tintIndex) -> {
+        itemColors.registerItemColorHandler((stack, tintIndex) ->
+        {
             if (tintIndex == 0)
             {
                 NBTTagCompound data = stack.getTagCompound();
@@ -45,7 +54,8 @@ public final class CuisineItemRendering
             return -1;
         }, CuisineRegistry.INGREDIENT);
 
-        itemColors.registerItemColorHandler((stack, tintIndex) -> {
+        itemColors.registerItemColorHandler((stack, tintIndex) ->
+        {
             if (tintIndex == 0 && CuisineRegistry.SPICE_BOTTLE.hasItem(stack))
             {
                 Spice spice = CuisineRegistry.SPICE_BOTTLE.getSpice(stack);
@@ -54,10 +64,23 @@ public final class CuisineItemRendering
                     return spice.getColorCode();
                 }
             }
+            else if (tintIndex == 1 && CuisineRegistry.SPICE_BOTTLE.hasFluid(stack))
+            {
+                IFluidHandlerItem handler = CuisineRegistry.SPICE_BOTTLE.getFluidHandler(stack);
+                if (handler != null)
+                {
+                    FluidStack fluid = handler.drain(Integer.MAX_VALUE, false);
+                    if (fluid != null)
+                    {
+                        return fluid.getFluid().getColor(fluid);
+                    }
+                }
+            }
             return -1;
         }, CuisineRegistry.SPICE_BOTTLE);
 
-        itemColors.registerItemColorHandler((stack, tintIndex) -> {
+        itemColors.registerItemColorHandler((stack, tintIndex) ->
+        {
             if (tintIndex == 0)
             {
                 stack = ItemHandlerHelper.copyStackWithSize(stack, 1);
@@ -74,7 +97,8 @@ public final class CuisineItemRendering
             return -1;
         }, CuisineRegistry.BOTTLE);
 
-        itemColors.registerItemColorHandler((stack, tintIndex) -> {
+        itemColors.registerItemColorHandler((stack, tintIndex) ->
+        {
             if (tintIndex == 1 && stack.hasCapability(CulinaryCapabilities.FOOD_CONTAINER, null))
             {
                 FoodContainer container = stack.getCapability(CulinaryCapabilities.FOOD_CONTAINER, null);
@@ -86,5 +110,7 @@ public final class CuisineItemRendering
             }
             return -1;
         }, CuisineRegistry.DRINK);
+
+        itemColors.registerItemColorHandler((stack, tintIndex) -> tintIndex == 0 ? ColorizerFoliage.getFoliageColorBasic() : -1, CuisineRegistry.SHEARED_LEAVES);
     }
 }

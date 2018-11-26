@@ -15,10 +15,14 @@ import snownee.cuisine.blocks.BlockDrinkro;
 import snownee.cuisine.blocks.BlockFirePit;
 import snownee.cuisine.blocks.BlockJar;
 import snownee.cuisine.blocks.BlockMill;
+import snownee.cuisine.blocks.BlockModDoor;
+import snownee.cuisine.blocks.BlockModLeaves;
 import snownee.cuisine.blocks.BlockModLog;
 import snownee.cuisine.blocks.BlockModSapling;
+import snownee.cuisine.blocks.BlockModTrapdoor;
 import snownee.cuisine.blocks.BlockMortar;
 import snownee.cuisine.blocks.BlockPlacedDish;
+import snownee.cuisine.blocks.BlockShearedLeaves;
 import snownee.cuisine.blocks.BlockSqueezer;
 import snownee.cuisine.blocks.BlockTofu;
 import snownee.cuisine.items.ItemBasicFood;
@@ -27,15 +31,21 @@ import snownee.cuisine.items.ItemCrops;
 import snownee.cuisine.items.ItemDish;
 import snownee.cuisine.items.ItemDrink;
 import snownee.cuisine.items.ItemDrinkro;
+import snownee.cuisine.items.ItemEmptyPlate;
 import snownee.cuisine.items.ItemIngredient;
 import snownee.cuisine.items.ItemIronSpatula;
 import snownee.cuisine.items.ItemKitchenKnife;
 import snownee.cuisine.items.ItemManual;
+import snownee.cuisine.items.ItemModBoat;
+import snownee.cuisine.items.ItemModDoor;
 import snownee.cuisine.items.ItemMortar;
 import snownee.cuisine.items.ItemSpiceBottle;
 import snownee.cuisine.potions.PotionDispersal;
 import snownee.kiwi.IModule;
 import snownee.kiwi.KiwiModule;
+import snownee.kiwi.block.BlockMod;
+import snownee.kiwi.block.BlockModFence;
+import snownee.kiwi.block.BlockModFenceGate;
 import snownee.kiwi.item.ItemMod;
 import snownee.kiwi.item.ItemModVariants;
 import snownee.kiwi.potion.PotionMod;
@@ -81,6 +91,7 @@ public class CuisineRegistry implements IModule
     public static final BlockMill MILL = new BlockMill("mill");
 
     public static final BlockPlacedDish PLACED_DISH = new BlockPlacedDish("placed_dish");
+    public static final ItemEmptyPlate EMPTY_PLATE = new ItemEmptyPlate(PLACED_DISH);
 
     public static final BlockFirePit FIRE_PIT = new BlockFirePit("fire_pit");
 
@@ -97,10 +108,28 @@ public class CuisineRegistry implements IModule
     public static final BlockDrinkro DRINKRO = new BlockDrinkro("drinkro");
     public static final ItemDrinkro ITEM_DRINKRO = new ItemDrinkro(DRINKRO);
 
-    public static final BlockModLog LOG = new BlockModLog("log");
-    public static final BlockModSapling SAPLING = new BlockModSapling("sapling");
-
     public static final ItemBasicFood BASIC_FOOD = new ItemBasicFood("food");
+
+    public static final BlockModLog LOG = new BlockModLog("log");
+    public static final BlockMod PLANKS = new BlockMod("planks", Material.WOOD);
+    public static final BlockModSapling SAPLING = new BlockModSapling("sapling");
+    public static final BlockModLeaves LEAVES_CITRON = new BlockModLeaves("leaves_citron", ItemBasicFood.Variants.CITRON);
+    public static final BlockModLeaves LEAVES_GRAPEFRUIT = new BlockModLeaves("leaves_grapefruit", ItemBasicFood.Variants.GRAPEFRUIT);
+    public static final BlockModLeaves LEAVES_LEMON = new BlockModLeaves("leaves_lemon", ItemBasicFood.Variants.LEMON);
+    public static final BlockModLeaves LEAVES_LIME = new BlockModLeaves("leaves_lime", ItemBasicFood.Variants.LIME);
+    public static final BlockModLeaves LEAVES_MANDARIN = new BlockModLeaves("leaves_mandarin", ItemBasicFood.Variants.MANDARIN);
+    public static final BlockModLeaves LEAVES_ORANGE = new BlockModLeaves("leaves_orange", ItemBasicFood.Variants.ORANGE);
+    public static final BlockModLeaves LEAVES_POMELO = new BlockModLeaves("leaves_pomelo", ItemBasicFood.Variants.POMELO);
+
+    public static final BlockShearedLeaves SHEARED_LEAVES = new BlockShearedLeaves("sheared_leaves");
+
+    public static final BlockModTrapdoor TRAPDOOR = new BlockModTrapdoor("trapdoor", Material.WOOD);
+
+    public static final BlockModDoor DOOR = new BlockModDoor("door", Material.WOOD);
+    public static final ItemModDoor ITEM_DOOR = new ItemModDoor(DOOR);
+
+    public static final BlockModFence FENCE = new BlockModFence("fence", PLANKS.getDefaultState());
+    public static final BlockModFenceGate FENCE_GATE = new BlockModFenceGate("fence_gate", PLANKS.getDefaultState());
 
     public static final ItemIronSpatula IRON_SPATULA = new ItemIronSpatula("iron_spatula");
 
@@ -118,9 +147,11 @@ public class CuisineRegistry implements IModule
 
     public static final ItemSpiceBottle SPICE_BOTTLE = new ItemSpiceBottle("spice_bottle");
 
-    public static final Item WOK = new ItemMod("wok").setCreativeTab(Cuisine.CREATIVE_TAB);
+    public static final ItemMod WOK = new ItemMod("wok");
 
     public static final ItemManual MANUAL = new ItemManual("manual");
+
+    public static final ItemModBoat BOAT = new ItemModBoat("boat");
 
     public static final ItemModVariants MATERIAL = (ItemModVariants) new ItemModVariants("material", Cuisine.Materials.INSTANCE).setCreativeTab(Cuisine.CREATIVE_TAB);
 
@@ -137,7 +168,11 @@ public class CuisineRegistry implements IModule
     @Override
     public void init()
     {
-        WOK.setContainerItem(WOK);
         Item.getItemFromBlock(PLACED_DISH).setContainerItem(Item.getItemFromBlock(PLACED_DISH));
+        WOK.setCreativeTab(Cuisine.CREATIVE_TAB).setContainerItem(WOK);
+        PLANKS.setCreativeTab(Cuisine.CREATIVE_TAB);
+        TRAPDOOR.setCreativeTab(Cuisine.CREATIVE_TAB).setHardness(3.0F);
+        FENCE.setCreativeTab(Cuisine.CREATIVE_TAB);
+        FENCE_GATE.setCreativeTab(Cuisine.CREATIVE_TAB);
     }
 }

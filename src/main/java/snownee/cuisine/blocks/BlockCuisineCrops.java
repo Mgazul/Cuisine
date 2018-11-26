@@ -7,7 +7,6 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.block.IGrowable;
-import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockFaceShape;
@@ -66,8 +65,6 @@ public class BlockCuisineCrops extends BlockMod implements IGrowable, IPlantable
         this.setDefaultState(this.blockState.getBaseState().withProperty(getAgeProperty(), 0));
         this.setCreativeTab(Cuisine.CREATIVE_TAB);
         this.setTickRandomly(true);
-        this.setHardness(0.0F);
-        this.setSoundType(SoundType.PLANT);
         this.disableStats();
         this.plantType = plantType;
         this.crop = crop;
@@ -372,5 +369,11 @@ public class BlockCuisineCrops extends BlockMod implements IGrowable, IPlantable
     public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player)
     {
         return getSeed().getItemStack();
+    }
+
+    @Override
+    public boolean isFlammable(IBlockAccess world, BlockPos pos, EnumFacing face)
+    {
+        return false;
     }
 }

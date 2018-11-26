@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.BlockHorizontal;
-import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
@@ -68,8 +67,6 @@ public class BlockChoppingBoard extends BlockMod
     {
         super(name, Material.WOOD);
         setCreativeTab(Cuisine.CREATIVE_TAB);
-        setHardness(1.5F);
-        setSoundType(SoundType.WOOD);
         this.setDefaultState(this.blockState.getBaseState().withProperty(HAS_KITCHEN_KNIFE, Boolean.FALSE).withProperty(BlockHorizontal.FACING, EnumFacing.NORTH));
     }
 
@@ -170,7 +167,7 @@ public class BlockChoppingBoard extends BlockMod
             {
                 ((TileChoppingBoard) te).process(playerIn, held, ProcessionType.KNIFE_HORIZONTAL, null);
             }
-            else if (!worldIn.isRemote && CuisineConfig.PROGRESSION.axeChopping && playerIn.getCooledAttackStrength(0) > 0.5)
+            else if (!worldIn.isRemote && CuisineConfig.GENERAL.axeChopping && playerIn.getCooledAttackStrength(0) > 0.5)
             {
                 int harvestLevel = held.getItem().getHarvestLevel(held, "axe", playerIn, null);
                 if (harvestLevel >= 0)

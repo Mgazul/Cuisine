@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -36,6 +37,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import snownee.cuisine.Cuisine;
 import snownee.cuisine.CuisineRegistry;
 import snownee.cuisine.api.process.Processing;
+import snownee.cuisine.items.ItemBasicFood;
 import snownee.cuisine.tiles.TileBasin;
 import snownee.cuisine.tiles.TileBasinHeatable;
 import snownee.cuisine.util.StacksUtil;
@@ -48,7 +50,6 @@ public class BlockBasin extends BlockMod
     public BlockBasin(String name, Material materialIn)
     {
         super(name, materialIn);
-        setHardness(2.0F);
         setCreativeTab(Cuisine.CREATIVE_TAB);
     }
 
@@ -76,10 +77,14 @@ public class BlockBasin extends BlockMod
                 {
                     entityIn.attackEntityFrom(DamageSource.CACTUS, 1);
                 }
-                tileBasin.process(Processing.SQUEEZING, input);
+                else if (input.getItem() == CuisineRegistry.BASIC_FOOD && input.getMetadata() == ItemBasicFood.Variants.EMPOWERED_CITRON.getMeta() && entityIn instanceof EntityPlayer && tileBasin.tank.getFluidAmount() == 0)
+                {
+                    ItemBasicFood.citronSays((EntityLivingBase) entityIn, "squeeze");
+                }
+                tileBasin.process(Processing.SQUEEZING, input, false);
                 if (entityIn instanceof EntityIronGolem)
                 {
-                    tileBasin.process(Processing.SQUEEZING, input);
+                    tileBasin.process(Processing.SQUEEZING, input, false);
                 }
             }
         }
@@ -106,7 +111,7 @@ public class BlockBasin extends BlockMod
                 List<ItemStack> items = worldIn.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos)).stream().filter(e -> !e.isDead && e.onGround).map(EntityItem::getItem).collect(Collectors.toList());
                 for (ItemStack stack : items)
                 {
-                    tileBasin.process(Processing.BASIN_THROWING, stack);
+                    tileBasin.process(Processing.BASIN_THROWING, stack, false);
                 }
                 tileBasin.tickCheckThrowing = 25;
             }
@@ -272,5 +277,17 @@ public class BlockBasin extends BlockMod
     public boolean isSideSolid(IBlockState base_state, IBlockAccess world, BlockPos pos, EnumFacing side)
     {
         return side == EnumFacing.DOWN;
+    }
+
+    @Override
+    public boolean isFlammable(IBlockAccess world, BlockPos pos, EnumFacing face)
+    {
+        return false;
+    }
+
+    @Override
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
+    {
+        return face == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
     }
 }

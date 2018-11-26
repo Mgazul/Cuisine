@@ -7,6 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockSapling;
 import net.minecraft.block.IGrowable;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -31,8 +32,7 @@ import net.minecraftforge.event.terraingen.TerrainGen;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import snownee.cuisine.Cuisine;
-import snownee.cuisine.CuisineRegistry;
-import snownee.cuisine.world.gen.WorldGenCitrusGenusTree;
+import snownee.cuisine.world.feature.WorldFeatureCitrusGenusTree;
 import snownee.kiwi.block.IModBlock;
 
 public class BlockModSapling extends BlockBush implements IModBlock, IGrowable
@@ -49,6 +49,7 @@ public class BlockModSapling extends BlockBush implements IModBlock, IGrowable
         this.setCreativeTab(Cuisine.CREATIVE_TAB);
         this.setDefaultState(blockState.getBaseState().withProperty(VARIANT, Type.POMELO).withProperty(BlockSapling.STAGE, 0));
         this.setTickRandomly(true);
+        setSoundType(SoundType.PLANT);
     }
 
     @Override
@@ -101,10 +102,11 @@ public class BlockModSapling extends BlockBush implements IModBlock, IGrowable
     @Override
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand)
     {
-        return getStateFromMeta(meta * 2);
+        return this.getDefaultState().withProperty(VARIANT, Type.values()[meta]);
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public IBlockState getStateFromMeta(int meta)
     {
         return this.getDefaultState().withProperty(VARIANT, Type.values()[meta / 2]).withProperty(BlockSapling.STAGE, meta % 2);
@@ -129,6 +131,7 @@ public class BlockModSapling extends BlockBush implements IModBlock, IGrowable
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
     {
         return SAPLING_AABB;
@@ -144,8 +147,7 @@ public class BlockModSapling extends BlockBush implements IModBlock, IGrowable
             {
                 if (world.getLightFromNeighbors(pos.up()) > 8 && rand.nextInt(8) == 0)
                 {
-                    int growthStage = state.getValue(BlockSapling.STAGE);
-                    if (growthStage == 0)
+                    if (state.getValue(BlockSapling.STAGE) == 0)
                     {
                         // Nothing to re-render, so we pass 4 to avoid unnecessary cost from re-rendering.
                         world.setBlockState(pos, state.cycleProperty(BlockSapling.STAGE), 4);
@@ -163,36 +165,6 @@ public class BlockModSapling extends BlockBush implements IModBlock, IGrowable
     {
         if (TerrainGen.saplingGrowTree(world, rand, pos))
         {
-            // Determine the wood type
-            IBlockState wood = CuisineRegistry.LOG.getDefaultState();
-
-            switch (state.getValue(VARIANT))
-            {
-                case POMELO:
-                {
-                    wood = wood.withProperty(BlockModLog.VARIANT, BlockModLog.Type.POMELO);
-                    break;
-                }
-                case CITRON:
-                {
-                    wood = wood.withProperty(BlockModLog.VARIANT, BlockModLog.Type.CITRON);
-                    break;
-                }
-                case MANDARIN:
-                {
-                    wood = wood.withProperty(BlockModLog.VARIANT, BlockModLog.Type.MANDARIN);
-                    break;
-                }
-                case GRAPEFRUIT:
-                {
-                    wood = wood.withProperty(BlockModLog.VARIANT, BlockModLog.Type.GRAPEFRUIT);
-                    break;
-                }
-            }
-
-            // TODO (3TUSK): determine the leaf type. Where is my leaf block? Use oak leaves for now.
-            IBlockState leave = Blocks.LEAVES.getDefaultState();
-
             /*
              * Set the tree sapling block to air, so that the tree generator can properly set
              * that spot to wood log.
@@ -208,7 +180,7 @@ public class BlockModSapling extends BlockBush implements IModBlock, IGrowable
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), 4);
 
             // And if the tree generation fails, we need to roll back to the sapling block.
-            if (!new WorldGenCitrusGenusTree(true, wood, leave).generate(world, rand, pos))
+            if (!new WorldFeatureCitrusGenusTree(true, state.getValue(VARIANT), false).generate(world, rand, pos))
             {
                 world.setBlockState(pos, state, 4);
             }
@@ -230,7 +202,14 @@ public class BlockModSapling extends BlockBush implements IModBlock, IGrowable
     @Override
     public void grow(World worldIn, Random rand, BlockPos pos, IBlockState state)
     {
-        this.growIntoTree(worldIn, rand, pos, state);
+        if (state.getValue(BlockSapling.STAGE) == 0)
+        {
+            worldIn.setBlockState(pos, state.withProperty(BlockSapling.STAGE, 1));
+        }
+        else
+        {
+            this.growIntoTree(worldIn, rand, pos, state);
+        }
     }
 
     public enum Type implements IStringSerializable

@@ -1,7 +1,5 @@
 package snownee.cuisine.crafting;
 
-import java.util.Map;
-
 import org.apache.commons.lang3.Validate;
 
 import net.minecraft.init.Items;
@@ -25,9 +23,6 @@ import snownee.cuisine.library.DummyVanillaRecipe;
 @Mod.EventBusSubscriber(modid = Cuisine.MODID)
 public final class VanillaRecipeRegistry
 {
-    private static Map<ItemStack, ItemStack> smeltingList = null;
-    private static Map<ItemStack, Float> experienceList;
-
     // Yes, we understand that this is a huge hack, but there is no way around unless we can also kill advancements.
     @SubscribeEvent
     public static void onVanillaRecipeRegistry(final RegistryEvent.Register<IRecipe> event)
@@ -64,6 +59,7 @@ public final class VanillaRecipeRegistry
         GameRegistry.addSmelting(CuisineRegistry.KITCHEN_KNIFE, new ItemStack(Items.IRON_INGOT), 0.1F);
         GameRegistry.addSmelting(CuisineRegistry.WOK, new ItemStack(Items.IRON_INGOT, 3), 0.1F);
         GameRegistry.addSmelting(CuisineRegistry.BAMBOO, CuisineRegistry.MATERIAL.getItemStack(Cuisine.Materials.BAMBOO_CHARCOAL), 0.1F);
+        GameRegistry.addSmelting(CuisineRegistry.LOG, new ItemStack(Items.COAL, 1, 1), 0.15F);
     }
 
     @SubscribeEvent
@@ -76,17 +72,11 @@ public final class VanillaRecipeRegistry
         }
         else if (stack.getItem() == CuisineRegistry.MATERIAL && stack.getItemDamage() == Cuisine.Materials.WOODEN_HANDLE.getMeta())
         {
-            event.setBurnTime(200);
+            event.setBurnTime(100);
         }
         else if (stack.getItem() == CuisineRegistry.MATERIAL && stack.getItemDamage() == Cuisine.Materials.BAMBOO_CHARCOAL.getMeta())
         {
             event.setBurnTime(1200);
         }
-    }
-
-    public static void removeFurnaceRecipe(ItemStack input)
-    {
-        smeltingList.remove(input);
-        experienceList.remove(input);
     }
 }

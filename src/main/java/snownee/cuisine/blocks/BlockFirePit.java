@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Lists;
 
 import net.minecraft.block.BlockHorizontal;
-import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockFaceShape;
@@ -66,10 +65,7 @@ public class BlockFirePit extends BlockModHorizontal
         super(name, Material.ROCK);
         setDefaultState(this.blockState.getBaseState().withProperty(BlockHorizontal.FACING, EnumFacing.NORTH).withProperty(COMPONENT, Component.NONE));
         setCreativeTab(Cuisine.CREATIVE_TAB);
-        setHardness(5.0F);
-        setResistance(10.0F);
         setLightLevel(0.9375F);
-        setSoundType(SoundType.STONE);
     }
 
     @Override
